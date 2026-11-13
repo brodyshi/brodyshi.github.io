@@ -1,0 +1,77 @@
+---
+import 'vitepress/dist/client/theme-default/styles/icons.css';
+import 'vitepress/dist/client/theme-default/styles/components/custom-block.css';
+import 'vitepress/dist/client/theme-default/styles/components/vp-doc.css';
+import 'vitepress/dist/client/theme-default/styles/components/vp-code-group.css';
+import 'virtual:group-icons.css';
+import 'katex/dist/katex.min.css';
+import '../styles/typography.css';
+---
+
+<div class="vp-doc">
+  <slot />
+</div>
+
+<script>
+  const shellLanguages = new Set(['shellscript', 'shell', 'bash', 'sh', 'zsh']);
+
+  document.addEventListener('change', (event) => {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement) || !input.checked) return;
+
+    const panels = input
+      .closest('.vp-code-group')
+      ?.querySelector(':scope > .blocks');
+    if (!panels || !input.dataset.codeTab) return;
+
+    for (const panel of panels.children) {
+      panel.classList.toggle('active', panel.id === input.dataset.codeTab);
+    }
+
+    const tabs = input.closest('.tabs');
+    const label = input.labels?.[0];
+    if (!tabs || !label || tabs.scrollWidth <= tabs.clientWidth) return;
+
+    const { left, right } = label.getBoundingClientRect();
+    const viewportLeft = tabs.getBoundingClientRect().left + tabs.clientLeft;
+    const viewportRight = viewportLeft + tabs.clientWidth;
+    if (left < viewportLeft) {
+      tabs.scrollBy({ left: left - viewportLeft, behavior: 'instant' });
+    } else if (right > viewportRight) {
+      tabs.scrollBy({ left: right - viewportRight, behavior: 'instant' });
+    }
+  });
+
+  document.addEventListener('click', async (event) => {
+    if (!(event.target instanceof Element)) return;
+
+    const button = event.target.closest<HTMLButtonElement>(
+      '.vp-doc button.copy',
+    );
+    const pre = button?.parentElement?.querySelector('pre');
+    const code = pre?.querySelector('code');
+    if (!button || !code || button.classList.contains('copied')) return;
+
+    const clone = code.cloneNode(true) as HTMLElement;
+    clone.querySelectorAll('.vp-copy-ignore, .diff.remove').forEach((node) => {
+      // Remove the separator belonging to a diff line as well as the line.
+      const separator = node.nextSibling;
+      if (node.matches('.diff.remove') && separator?.textContent === '\n') {
+        separator.parentNode?.removeChild(separator);
+      }
+      node.remove();
+    });
+    let source = clone.textContent ?? '';
+    if (shellLanguages.has(pre?.dataset.language ?? '')) {
+      source = source.replace(/^ *(\$|>) /gm, '').trim();
+    }
+    try {
+      await navigator.clipboard.writeText(source);
+    } catch {
+      return;
+    }
+
+    button.classList.add('copied');
+    window.setTimeout(() => button.classList.remove('copied'), 2000);
+  });
+</script>

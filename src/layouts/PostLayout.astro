@@ -1,0 +1,167 @@
+---
+import { IconArrowLeft, IconArrowRight } from '@tabler/icons-astro';
+import type { MarkdownHeading } from 'astro';
+
+import Back from '../components/Back.astro';
+import Prose from '../components/Prose.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import { config } from '../config';
+import { formatDate, type Post, tagUrl } from '../utils/posts';
+import BaseLayout from './BaseLayout.astro';
+
+interface AdjacentPost {
+  title: string;
+  url: string;
+}
+
+interface Props {
+  post: Post;
+  headings: MarkdownHeading[];
+  newer?: AdjacentPost | undefined;
+  older?: AdjacentPost | undefined;
+}
+
+const { post, headings, newer, older } = Astro.props;
+const { title, description, published, updated, tags } = post.data;
+const displayDate = updated ?? published;
+const dateLabel = updated
+  ? config.pages.post.updated
+  : config.pages.post.published;
+const adjacentPosts = [
+  {
+    post: newer,
+    label: config.pages.post.newer,
+    alignEnd: false,
+    icon: IconArrowLeft,
+  },
+  {
+    post: older,
+    label: config.pages.post.older,
+    alignEnd: true,
+    icon: IconArrowRight,
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  post={{ title, published, updated, tags }}
+>
+  <article>
+    <header class="mb-8 space-y-4">
+      <Back href={config.pages.posts.href}>{config.pages.post.back}</Back>
+      <h1 class="text-3xl font-bold tracking-tight wrap-anywhere sm:text-4xl">
+        {title}
+      </h1>
+      <time
+        class="block text-sm text-muted-foreground"
+        datetime={displayDate.toISOString()}
+      >
+        {dateLabel(formatDate(displayDate))}
+      </time>
+      {tags.length > 0 && (
+        <ul
+          class="flex flex-wrap gap-x-4 gap-y-2"
+          aria-label={config.pages.post.tags}
+        >
+          {tags.map((tag) => (
+            <li>
+              <a class="button px-0 wrap-anywhere" href={tagUrl(tag)}>
+                #{tag}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </header>
+    <div class="relative">
+      <TableOfContents headings={headings} />
+      <Prose>
+        <slot />
+      </Prose>
+    </div>
+    {(newer || older) && (
+      <nav
+        class="mt-12 grid gap-3 border-t border-border pt-6 sm:grid-cols-2"
+        aria-label={config.pages.post.pagination}
+      >
+        {adjacentPosts.map(
+          ({ post, label, alignEnd, icon: ArrowIcon }) =>
+            post && (
+              <a
+                class:list={[
+                  'group flex flex-col gap-1 rounded-lg border border-border p-4 wrap-anywhere link',
+                  { 'sm:col-start-2 sm:text-end': alignEnd },
+                ]}
+                href={post.url}
+              >
+                <span
+                  class:list={[
+                    'inline-flex w-fit items-center gap-1 text-xs text-muted-foreground transition-colors group-hover:text-accent-foreground',
+                    { 'flex-row-reverse sm:self-end': alignEnd },
+                  ]}
+                >
+                  <ArrowIcon size={16} aria-hidden="true" />
+                  {label}
+                </span>
+                <strong class="text-sm font-semibold">{post.title}</strong>
+              </a>
+            ),
+        )}
+      </nav>
+    )}
+  </article>
+  <script>
+    const marker = document.querySelector<HTMLElement>('[data-toc-marker]');
+    const links =
+      document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+    const sections = Array.from(links).flatMap((link) => {
+      const heading = document.getElementById(
+        decodeURIComponent(link.hash.slice(1)),
+      );
+      return heading ? [{ link, heading }] : [];
+    });
+
+    if (marker && sections.length) {
+      const outlineMarker = marker;
+      let current: HTMLAnchorElement | undefined;
+
+      function updateOutline() {
+        if (!outlineMarker.offsetParent) return;
+
+        let active = sections[0]?.link;
+        for (const { heading, link } of sections) {
+          if (heading.getBoundingClientRect().top <= 1) active = link;
+        }
+
+        if (!active) return;
+        if (current !== active) {
+          current?.removeAttribute('aria-current');
+          active.setAttribute('aria-current', 'location');
+          current = active;
+        }
+
+        const center = (active.offsetHeight - outlineMarker.offsetHeight) / 2;
+        outlineMarker.style.top = `${active.offsetTop + center}px`;
+        outlineMarker.style.opacity = '1';
+      }
+      let scheduled = false;
+      window.addEventListener(
+        'scroll',
+        () => {
+          if (!scheduled) {
+            scheduled = true;
+            requestAnimationFrame(() => {
+              updateOutline();
+              scheduled = false;
+            });
+          }
+        },
+        { passive: true },
+      );
+      window.addEventListener('resize', updateOutline);
+      updateOutline();
+    }
+  </script>
+</BaseLayout>

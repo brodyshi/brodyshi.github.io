@@ -1,0 +1,275 @@
+---
+import {
+  IconBrandGithub,
+  IconDeviceDesktop,
+  IconMenu2,
+  IconMoon,
+  IconSun,
+} from '@tabler/icons-astro';
+
+import { config } from '../config';
+
+const { pathname } = Astro.url;
+const links = config.nav.map((key) => {
+  const { href, title } = config.pages[key];
+  return {
+    href,
+    title,
+    current: href === '/' ? pathname === '/' : pathname.startsWith(href),
+  };
+});
+---
+
+<header class="layout">
+  <div class="relative flex min-h-16 items-center justify-end border-b border-border sm:justify-between">
+    <nav class="hidden sm:block" aria-label={config.header.navigation}>
+      <ul class="flex items-center gap-6">
+        {links.map(({ title, href, current }) => (
+          <li>
+            <a
+              href={href}
+              aria-current={current ? 'page' : undefined}
+              class="block py-3 text-sm font-medium whitespace-nowrap link active:text-accent-foreground aria-[current=page]:text-accent-foreground"
+            >
+              {title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-1">
+      <button
+        id="switch-theme"
+        type="button"
+        class="button size-8 p-0"
+        aria-label={config.header.switchTheme}
+      >
+        <IconDeviceDesktop
+          class="[html[data-theme]_&]:hidden"
+          size={20}
+          aria-hidden="true"
+        />
+        <IconSun
+          class="hidden [html[data-theme=light]_&]:block"
+          size={20}
+          aria-hidden="true"
+        />
+        <IconMoon
+          class="hidden [html[data-theme=dark]_&]:block"
+          size={20}
+          aria-hidden="true"
+        />
+      </button>
+
+      <a
+        class="button hidden size-8 p-0 sm:inline-flex"
+        href={config.github}
+        aria-label={config.header.github(config.name)}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <IconBrandGithub size={20} aria-hidden="true" />
+      </a>
+
+      <details id="mobile-menu" class="sm:hidden">
+        <summary
+          class="mobile-menu-toggle button size-8 p-0"
+          aria-label={config.header.expand}
+        >
+          <IconMenu2 class="mobile-menu-icon" size={20} aria-hidden="true" />
+        </summary>
+        <nav
+          class="mobile-menu-panel absolute inset-x-0 top-full z-30 mt-2 max-h-[30svh] overflow-y-auto rounded-lg border border-border bg-background px-4 py-2 text-foreground shadow-md dark:bg-muted"
+          aria-label={config.header.navigation}
+        >
+          <ul class="space-y-1">
+            {links.map(({ title, href, current }) => (
+              <li>
+                <a
+                  href={href}
+                  aria-current={current ? 'page' : undefined}
+                  class="block py-2 text-sm font-medium whitespace-nowrap link active:text-accent-foreground aria-[current=page]:text-accent-foreground"
+                >
+                  {title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>
+
+<style>
+  .mobile-menu-toggle {
+    display: inline-flex;
+    list-style: none;
+  }
+
+  .mobile-menu-toggle::marker {
+    content: '';
+  }
+
+  .mobile-menu-toggle::-webkit-details-marker {
+    display: none;
+  }
+
+  #mobile-menu :global(.mobile-menu-icon > path) {
+    transform-box: view-box;
+    transform-origin: center;
+  }
+
+  /* The outer strokes are six units from the center of the Tabler viewBox. */
+  #mobile-menu[open] :global(.mobile-menu-icon > path:first-child) {
+    transform: rotate(45deg) translateY(6px);
+  }
+
+  #mobile-menu[open] :global(.mobile-menu-icon > path:nth-child(2)) {
+    opacity: 0;
+  }
+
+  #mobile-menu[open] :global(.mobile-menu-icon > path:last-child) {
+    transform: rotate(-45deg) translateY(-6px);
+  }
+
+  @supports selector(::details-content) {
+    #mobile-menu::details-content {
+      position: absolute;
+      inset: 100% 0 auto;
+      z-index: 30;
+    }
+
+    .mobile-menu-panel {
+      position: static;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    #mobile-menu :global(.mobile-menu-icon > path) {
+      transition:
+        transform 180ms ease-out,
+        opacity 180ms ease-out;
+    }
+
+    #mobile-menu::details-content {
+      transition: content-visibility 220ms allow-discrete;
+    }
+
+    .mobile-menu-panel {
+      opacity: 0;
+      translate: 0 -0.5rem;
+      transition:
+        opacity 220ms ease,
+        translate 220ms ease;
+    }
+
+    #mobile-menu:not([open]) .mobile-menu-panel {
+      interactivity: inert;
+      pointer-events: none;
+    }
+
+    #mobile-menu[open] .mobile-menu-panel {
+      opacity: 1;
+      translate: 0;
+
+      @starting-style {
+        opacity: 0;
+        translate: 0 -0.5rem;
+      }
+    }
+  }
+</style>
+
+<script>
+  import { config } from '../config';
+
+  const { expand, collapse, switchThemeTo, themeOptions } = config.header;
+  const menu = document.querySelector<HTMLDetailsElement>('#mobile-menu');
+  const summary = menu?.querySelector('summary');
+  const nav = menu?.querySelector('nav');
+
+  menu?.addEventListener('toggle', () => {
+    if (nav) nav.inert = !menu.open;
+    summary?.setAttribute('aria-label', menu.open ? collapse : expand);
+  });
+  document.addEventListener('click', (event) => {
+    if (
+      menu?.open &&
+      event.target instanceof Node &&
+      !menu.contains(event.target)
+    ) {
+      menu.open = false;
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && menu?.open) {
+      menu.open = false;
+      summary?.focus();
+    }
+  });
+  window.matchMedia('(width >= 40rem)').addEventListener('change', () => {
+    if (menu) menu.open = false;
+  });
+
+  const root = document.documentElement;
+  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+  const switchTheme = document.getElementById('switch-theme');
+
+  function getThemeCycle() {
+    const saved = root.dataset.theme;
+    const current = saved === 'light' || saved === 'dark' ? saved : 'system';
+    const system = systemTheme.matches ? 'dark' : 'light';
+    const opposite = system === 'dark' ? 'light' : 'dark';
+    if (current === 'system') return { current, next: opposite } as const;
+    return { current, next: current === system ? 'system' : system } as const;
+  }
+
+  function updateThemeLabel() {
+    if (!switchTheme) return;
+    const { current, next } = getThemeCycle();
+    const label = switchThemeTo(themeOptions[current], themeOptions[next]);
+    switchTheme.setAttribute('aria-label', label);
+    switchTheme.title = label;
+  }
+
+  function applyTheme(selected: keyof typeof themeOptions) {
+    const style = document.createElement('style');
+    style.textContent =
+      '*, *::before, *::after { transition: none !important; }';
+    document.head.appendChild(style);
+
+    if (selected === 'system') delete root.dataset.theme;
+    else root.dataset.theme = selected;
+    root.classList.toggle(
+      'dark',
+      selected === 'system' ? systemTheme.matches : selected === 'dark',
+    );
+
+    // Apply the new palette before restoring CSS transitions.
+    void getComputedStyle(style).opacity;
+    style.remove();
+  }
+
+  switchTheme?.addEventListener('click', () => {
+    const { next: selected } = getThemeCycle();
+    applyTheme(selected);
+    updateThemeLabel();
+
+    try {
+      if (selected === 'system') localStorage.removeItem('theme');
+      else localStorage.setItem('theme', selected);
+    } catch {
+      /* Keep the selected theme for this page when storage is unavailable. */
+    }
+  });
+  systemTheme.addEventListener('change', () => {
+    if (!root.dataset.theme) applyTheme('system');
+    updateThemeLabel();
+  });
+  if (!root.dataset.theme) {
+    root.classList.toggle('dark', systemTheme.matches);
+  }
+  updateThemeLabel();
+</script>

@@ -1,0 +1,31 @@
+---
+import { config } from '../../config';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPosts, getTags, tagUrl } from '../../utils/posts';
+const tags = getTags(await getPosts());
+---
+
+<BaseLayout
+  title={config.pages.tags.title}
+  description={config.pages.tags.description}
+>
+  <h1 class="mb-8 text-3xl font-bold tracking-tight wrap-anywhere sm:text-4xl">
+    {config.pages.tags.title}
+  </h1>
+  {tags.length > 0 ? (
+    <ul class="flex flex-wrap gap-3">
+      {tags.map(({ name, count }) => (
+        <li>
+          <a class="button border border-border bg-muted" href={tagUrl(name)}>
+            {name}
+            <span class="text-xs font-normal text-muted-foreground tabular-nums">
+              {count}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class="text-sm text-muted-foreground">{config.pages.tags.empty}</p>
+  )}
+</BaseLayout>

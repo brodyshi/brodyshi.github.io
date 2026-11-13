@@ -1,0 +1,42 @@
+---
+import { IconArrowRight } from '@tabler/icons-astro';
+
+import PostList from '../components/PostList.astro';
+import { config } from '../config';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPosts } from '../utils/posts';
+const posts = await getPosts();
+---
+
+<BaseLayout>
+  <section class="space-y-4 pb-8 sm:pb-12" aria-labelledby="intro-title">
+    <h1
+      id="intro-title"
+      class="text-3xl font-bold tracking-tight wrap-anywhere sm:text-4xl"
+      aria-label={config.pages.home.greeting}
+    >
+      👋
+    </h1>
+    <p class="max-w-prose text-base leading-relaxed text-muted-foreground">
+      {config.pages.home.description}
+    </p>
+    <a href={config.pages.about.href} class="button px-0">
+      {config.pages.home.about}
+      <IconArrowRight size={16} aria-hidden="true" />
+    </a>
+  </section>
+
+  <section class="space-y-4" aria-labelledby="recent-posts">
+    <h2 id="recent-posts" class="text-xl font-semibold">
+      {config.pages.home.recentPosts}
+    </h2>
+    <PostList
+      posts={posts.slice(0, config.pages.home.postLimit)}
+      heading="h3"
+    />
+    <a href={config.pages.posts.href} class="button px-0">
+      {config.pages.home.allPosts}
+      <IconArrowRight size={16} aria-hidden="true" />
+    </a>
+  </section>
+</BaseLayout>

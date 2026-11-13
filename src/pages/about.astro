@@ -1,0 +1,18 @@
+---
+import Prose from '../components/Prose.astro';
+import { config } from '../config';
+import { Content } from '../content/pages/about.md';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title={config.pages.about.title}
+  description={config.pages.about.description}
+>
+  <h1 class="mb-8 text-3xl font-bold tracking-tight wrap-anywhere sm:text-4xl">
+    {config.pages.about.title}
+  </h1>
+  <Prose>
+    <Content />
+  </Prose>
+</BaseLayout>

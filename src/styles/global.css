@@ -1,0 +1,24 @@
+@import 'tailwindcss' source('../');
+@import './theme.css';
+
+@layer base {
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent-foreground;
+  }
+
+  ::selection {
+    @apply bg-accent text-foreground;
+  }
+}
+
+@utility layout {
+  @apply mx-auto w-full max-w-3xl px-4;
+}
+
+@utility button {
+  @apply inline-flex min-h-8 cursor-pointer items-center justify-center gap-2 rounded-md px-3 py-1 text-sm font-medium transition-colors hover:text-accent-foreground;
+}
+
+@utility link {
+  @apply underline-offset-4 transition-colors hover:text-accent-foreground;
+}

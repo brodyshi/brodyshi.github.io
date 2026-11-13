@@ -1,0 +1,55 @@
+---
+import { config } from '../config';
+import { formatDate, type Post, postUrl } from '../utils/posts';
+
+interface Props {
+  posts: Post[];
+  heading?: 'h2' | 'h3';
+}
+
+const { posts, heading: Heading = 'h2' } = Astro.props;
+---
+
+{posts.length ? (
+  <ul>
+    {posts.map((post, index) => {
+      const {
+        id,
+        data: { title, description, published },
+      } = post;
+      const titleId = `post-title-${index}`;
+      const readingMinutes =
+        (post.rendered?.metadata?.frontmatter as { readingMinutes?: number })
+          ?.readingMinutes ?? 1;
+
+      return (
+        <li>
+          <a
+            href={postUrl(id)}
+            aria-labelledby={titleId}
+            class="group block space-y-2 border-b border-border py-6"
+          >
+            <Heading
+              id={titleId}
+              class="text-lg font-semibold wrap-anywhere transition-colors group-hover:text-accent-foreground group-focus-visible:text-accent-foreground"
+            >
+              {title}
+            </Heading>
+            <p class="text-sm leading-relaxed wrap-anywhere text-muted-foreground">
+              {description}
+            </p>
+            <div class="flex flex-wrap items-center gap-2 text-xs text-muted-foreground tabular-nums">
+              <time datetime={published.toISOString()}>
+                {formatDate(published)}
+              </time>
+              <span aria-hidden="true">·</span>
+              <span>{config.common.readingTime(readingMinutes)}</span>
+            </div>
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+) : (
+  <p class="py-8 text-sm text-muted-foreground">{config.common.emptyPosts}</p>
+)}

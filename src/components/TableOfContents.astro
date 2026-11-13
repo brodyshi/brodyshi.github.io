@@ -1,0 +1,95 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+import { config } from '../config';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const headings = Astro.props.headings.filter(
+  ({ depth }) => depth === 2 || depth === 3,
+);
+---
+
+{headings.length > 0 && (
+  <details class="mobile-toc custom-block details mb-8 xl:hidden" open>
+    <summary id="mobile-toc-title">{config.pages.post.toc}</summary>
+    <nav aria-labelledby="mobile-toc-title">
+      <ul>
+        {headings.map(({ depth, slug, text }) => (
+          <li class:list={{ 'ps-4': depth === 3 }}>
+            <a class="block py-1 wrap-anywhere" href={`#${slug}`}>
+              {text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </details>
+)}
+
+{headings.length > 0 && (
+  <aside class="absolute inset-y-0 inset-s-full ms-6 hidden w-56 xl:block">
+    <nav
+      aria-labelledby="post-toc-title"
+      class="sticky top-20 max-h-[calc(100svh-6rem)] overflow-y-auto"
+    >
+      <div class="relative border-s border-border text-sm leading-8">
+        <span class="outline-marker" aria-hidden="true" data-toc-marker></span>
+        <h2 id="post-toc-title" class="ps-4 font-semibold">
+          {config.pages.post.toc}
+        </h2>
+        <ul>
+          {headings.map((heading) => (
+            <li class={heading.depth === 3 ? 'ps-8' : 'ps-4'}>
+              <a
+                class="block wrap-anywhere text-muted-foreground transition-colors hover:text-foreground focus-visible:-outline-offset-2 aria-[current=location]:text-foreground"
+                href={`#${heading.slug}`}
+                data-toc-link
+              >
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </nav>
+  </aside>
+)}
+
+<style>
+  .mobile-toc nav a {
+    color: var(--muted-foreground);
+    font-weight: 400;
+    text-decoration: none;
+    transition: color 0.25s;
+  }
+
+  .mobile-toc nav a:hover,
+  .mobile-toc nav a:focus-visible,
+  .mobile-toc summary:hover {
+    color: var(--accent-foreground);
+    opacity: 1;
+  }
+
+  .outline-marker {
+    position: absolute;
+    top: 2rem;
+    inset-inline-start: -1px;
+    width: 2px;
+    height: 1.125rem;
+    border-radius: 2px;
+    background: var(--accent-foreground);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .outline-marker {
+      transition:
+        top 0.25s cubic-bezier(0, 1, 0.5, 1),
+        opacity 0.25s;
+    }
+  }
+</style>
