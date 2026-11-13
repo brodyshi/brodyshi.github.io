@@ -1,0 +1,44 @@
+@reference './theme.css';
+
+.vp-doc {
+  overflow-wrap: break-word;
+
+  :is(h2, h3)[id] {
+    scroll-margin-top: 0;
+  }
+
+  code,
+  pre {
+    font-family: var(--vp-font-family-mono);
+  }
+
+  .astro-code span {
+    color: var(--shiki-light, inherit);
+
+    @variant dark {
+      color: var(--shiki-dark, inherit);
+    }
+  }
+
+  .katex-display {
+    overflow-x: auto;
+  }
+
+  .tabs input:focus-visible + label {
+    outline: 2px solid var(--accent-foreground);
+    outline-offset: -2px;
+  }
+
+  @media (width < 40rem) {
+    /* Match the blog's article gutter for VitePress's full-width blocks. */
+    div[dir='ltr'][class*='language-'],
+    .vp-code-block-title:not(.custom-block *) > .vp-code-block-title-bar,
+    .vp-code-group .tabs {
+      margin-inline: -1rem;
+    }
+
+    .vp-code-block-title:not(.custom-block *) > .vp-code-block-title-bar {
+      border-radius: 0;
+    }
+  }
+}

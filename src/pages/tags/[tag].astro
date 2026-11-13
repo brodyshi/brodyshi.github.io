@@ -1,0 +1,26 @@
+---
+import Back from '../../components/Back.astro';
+import PostList from '../../components/PostList.astro';
+import { config } from '../../config';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPosts, getTags, tagSlug } from '../../utils/posts';
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return getTags(posts).map(({ name }) => ({
+    params: { tag: tagSlug(name) },
+    props: {
+      name,
+      posts: posts.filter((post) => post.data.tags.includes(name)),
+    },
+  }));
+}
+const { name, posts } = Astro.props;
+---
+
+<BaseLayout {...config.pages.tag(name)}>
+  <Back href={config.pages.tags.href}>{config.pages.tags.back}</Back>
+  <h1 class="mb-8 text-3xl font-bold tracking-tight wrap-anywhere sm:text-4xl">
+    #{name}
+  </h1>
+  <PostList posts={posts} />
+</BaseLayout>

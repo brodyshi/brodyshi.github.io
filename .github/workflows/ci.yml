@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: 🏗️ Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout source
+        uses: actions/checkout@v7
+
+      - name: 📦 Setup pnpm from package.json
+        uses: pnpm/action-setup@v6
+
+      - name: 🟢 Setup Node.js 26.12.1 and pnpm cache
+        uses: actions/setup-node@v7
+        with:
+          node-version: '26.12.1'
+          cache: pnpm
+
+      - name: 🔐 Install with frozen lockfile
+        run: pnpm install --frozen-lockfile
+
+      - name: ✅ Check format, lint, types and build
+        run: pnpm build
+
+      - name: 📤 Upload dist for Pages
+        uses: actions/upload-pages-artifact@v4
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        with:
+          path: dist
+
+  deploy:
+    name: 🚀 Deploy
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: ⚙️ Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: 🚢 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

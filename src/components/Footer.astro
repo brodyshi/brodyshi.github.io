@@ -1,0 +1,32 @@
+---
+import { IconBrandGithub, IconRss } from '@tabler/icons-astro';
+
+import { config } from '../config';
+const year = new Date().getFullYear();
+---
+
+<footer class="layout">
+  <div class="flex flex-col gap-3 py-9 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+    <p class="flex justify-center">
+      © {year} {config.author}
+    </p>
+    <div class="flex flex-wrap justify-center gap-1">
+      <a
+        class="button size-8 p-0"
+        href="/rss.xml"
+        aria-label={config.footer.rss}
+      >
+        <IconRss size={16} aria-hidden="true" />
+      </a>
+      <a
+        class="button size-8 p-0"
+        href={config.github}
+        aria-label={config.footer.github}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <IconBrandGithub size={16} aria-hidden="true" />
+      </a>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,16 @@
+---
+import { IconArrowLeft } from '@tabler/icons-astro';
+
+interface Props {
+  href: string;
+}
+
+const { href } = Astro.props;
+---
+
+<p class="mb-4 text-sm text-muted-foreground">
+  <a class="inline-flex items-center gap-1 link" {href}>
+    <IconArrowLeft size={16} aria-hidden="true" />
+    <slot />
+  </a>
+</p>

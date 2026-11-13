@@ -1,0 +1,30 @@
+/*
+ * Light and dark palette from the VitePress 1.6.4 default theme.
+ * https://github.com/vuejs/vitepress/blob/v1.6.4/src/client/theme-default/styles/vars.css
+ */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+  --background: var(--vp-c-bg);
+  --foreground: var(--vp-c-text-1);
+  --muted: var(--vp-c-bg-soft);
+  --muted-foreground: var(--vp-c-text-2);
+  --accent: var(--vp-c-brand-soft);
+  --accent-foreground: var(--vp-c-brand-1);
+  --border: var(--vp-c-divider);
+
+  @variant dark {
+    color-scheme: dark;
+  }
+}
