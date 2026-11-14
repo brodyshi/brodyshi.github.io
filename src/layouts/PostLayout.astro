@@ -1,5 +1,9 @@
 ---
-import { IconArrowLeft, IconArrowRight } from '@tabler/icons-astro';
+import {
+  IconArrowLeft,
+  IconArrowRight,
+  IconArrowUp,
+} from '@tabler/icons-astro';
 import type { MarkdownHeading } from 'astro';
 
 import Back from '../components/Back.astro';
@@ -112,7 +116,30 @@ const adjacentPosts = [
       </nav>
     )}
   </article>
+  <button
+    type="button"
+    class="fixed inset-e-3 bottom-3 z-10 grid size-11 cursor-pointer place-items-center rounded-full border border-border bg-background/95 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:inset-e-5 sm:bottom-5"
+    aria-label={config.pages.post.backToTop}
+    title={config.pages.post.backToTop}
+    data-back-to-top
+    hidden
+  >
+    <IconArrowUp size={18} aria-hidden="true" />
+  </button>
   <script>
+    const backToTop =
+      document.querySelector<HTMLButtonElement>('[data-back-to-top]');
+    if (backToTop) {
+      const updateBackToTop = () => {
+        backToTop.hidden = window.scrollY < window.innerHeight;
+      };
+
+      window.addEventListener('scroll', updateBackToTop, { passive: true });
+      window.addEventListener('resize', updateBackToTop);
+      backToTop.addEventListener('click', () => window.scrollTo({ top: 0 }));
+      updateBackToTop();
+    }
+
     const marker = document.querySelector<HTMLElement>('[data-toc-marker]');
     const links =
       document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
