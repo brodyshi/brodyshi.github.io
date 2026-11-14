@@ -13,7 +13,7 @@ const headings = Astro.props.headings.filter(
 ---
 
 {headings.length > 0 && (
-  <details class="mobile-toc custom-block details mb-8 xl:hidden" open>
+  <details class="mobile-toc custom-block details mb-8 xl:hidden">
     <summary id="mobile-toc-title">{config.pages.post.toc}</summary>
     <nav aria-labelledby="mobile-toc-title">
       <ul>
