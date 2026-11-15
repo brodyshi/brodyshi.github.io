@@ -7,6 +7,10 @@
     scroll-margin-top: 0;
   }
 
+  img[data-image-viewer-trigger] {
+    cursor: zoom-in;
+  }
+
   code,
   pre {
     font-family: var(--vp-font-family-mono);

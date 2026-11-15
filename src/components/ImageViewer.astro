@@ -1,0 +1,64 @@
+---
+import { config } from '../config';
+---
+
+<dialog
+  class="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none grid-cols-[minmax(0,1fr)] grid-rows-[minmax(0,1fr)] place-items-center overflow-hidden bg-transparent px-2 py-4 open:grid"
+  aria-label={config.pages.post.viewImage}
+  data-image-viewer
+>
+  <img class="max-h-full max-w-full object-contain" alt="" />
+</dialog>
+
+<style>
+  dialog::backdrop {
+    background: var(--vp-backdrop-bg-color);
+  }
+
+  :global(html):has(dialog[open]) {
+    overflow: hidden;
+    scrollbar-gutter: auto;
+  }
+</style>
+
+<script>
+  const viewer = document.querySelector<HTMLDialogElement>(
+    '[data-image-viewer]',
+  );
+  const preview = viewer?.querySelector('img');
+
+  if (viewer?.showModal && preview) {
+    const label = viewer.getAttribute('aria-label');
+    const images = document.querySelectorAll<HTMLImageElement>(
+      '.vp-doc img:is([src], [srcset])',
+    );
+
+    for (const image of images) {
+      if (image.closest('a[href], button')) continue;
+
+      image.dataset.imageViewerTrigger = '';
+      image.tabIndex = 0;
+      image.setAttribute('role', 'button');
+      image.setAttribute('aria-haspopup', 'dialog');
+      if (!image.alt.trim() && label) image.setAttribute('aria-label', label);
+
+      const openViewer = () => {
+        image.focus({ preventScroll: true });
+        preview.alt = image.alt;
+        preview.src = image.currentSrc || image.src;
+        viewer.showModal();
+      };
+
+      image.addEventListener('click', openViewer);
+      image.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        openViewer();
+      });
+    }
+
+    viewer.addEventListener('click', (event) => {
+      if (event.target === viewer) viewer.close();
+    });
+  }
+</script>
