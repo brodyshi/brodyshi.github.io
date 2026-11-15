@@ -35,6 +35,7 @@ export const config = {
       pagination: '相邻文章',
       newer: '较新一篇',
       older: '较早一篇',
+      viewImage: '查看大图',
     },
     tags: {
       href: '/tags/',

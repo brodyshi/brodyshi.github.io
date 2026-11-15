@@ -7,6 +7,7 @@ import {
 import type { MarkdownHeading } from 'astro';
 
 import Back from '../components/Back.astro';
+import ImageViewer from '../components/ImageViewer.astro';
 import Prose from '../components/Prose.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import { config } from '../config';
@@ -116,6 +117,7 @@ const adjacentPosts = [
       </nav>
     )}
   </article>
+  <ImageViewer />
   <button
     type="button"
     class="fixed inset-e-3 bottom-3 z-10 grid size-11 cursor-pointer place-items-center rounded-full border border-border bg-background/95 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:inset-e-5 sm:bottom-5"
