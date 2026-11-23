@@ -1,40 +1,37 @@
 # Brody Shi’s Blog
 
-[Visit the blog](https://brodyshi.github.io/) · [Subscribe via RSS](https://brodyshi.github.io/rss.xml)
-
-[Astro](https://astro.build/) builds the site from Markdown. [Tailwind CSS](https://tailwindcss.com/) handles the layout, and [VitePress](https://vitepress.dev/) provides the palette and article styles.
+A Markdown blog built with [Astro](https://astro.build/), with [Tailwind CSS](https://tailwindcss.com/) for layout and [VitePress](https://vitepress.dev/) for colors and article styles.
 
 ## Run locally
 
-Use [Node.js](https://nodejs.org/en) `26.12.1` and [pnpm](https://pnpm.io/) `12.15.0`. With [mise](https://mise.jdx.dev/), run `mise install` to set up both versions from [`mise.toml`](mise.toml).
+Use Node.js `26.12.1` and pnpm `12.15.0`. If you use [mise](https://mise.jdx.dev/), run `mise install` to install both from [mise.toml](mise.toml).
 
 ```sh
 pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open the URL Astro prints, usually `http://localhost:4321`.
+Open the URL printed by Astro (usually `http://localhost:4321`).
 
-| Command        | Purpose                                              |
-| -------------- | ---------------------------------------------------- |
-| `pnpm check`   | Check formatting, lint rules, and types.             |
-| `pnpm build`   | Run all checks and build the static site in `dist/`. |
-| `pnpm preview` | Preview `dist/` after a build.                       |
-
-Use `pnpm format:fix` and `pnpm lint:fix` to apply automatic fixes.
+| Command                             | Purpose                           |
+| ----------------------------------- | --------------------------------- |
+| `pnpm check`                        | Check formatting, lint, and types |
+| `pnpm build`                        | Run checks and build to `dist/`   |
+| `pnpm preview`                      | Preview the build                 |
+| `pnpm format:fix` / `pnpm lint:fix` | Apply formatting / lint fixes     |
 
 ## Write a post
 
-Run `pnpm post` to answer the prompts, or use either command below. The first derives the filename from the English title. The second supplies a filename for a Chinese title.
+Run `pnpm post` for interactive prompts, or pass a title directly.
 
 ```sh
 pnpm post "My First Post"
 pnpm post --title "我的第一篇文章" --filename my-first-post.md
 ```
 
-Both commands create `my-first-post.md` in [`src/content/posts/`](src/content/posts/). Use lowercase letters and digits, with single hyphens between words. The filename determines the URL (`/posts/my-first-post/`), so keep it stable after publishing.
+Both examples create `my-first-post.md` in [src/content/posts/](src/content/posts/). Use lowercase letters and digits with single hyphens between words. Keep the filename after publishing to preserve the URL (`/posts/my-first-post/`).
 
-New posts start with `draft: true`, a placeholder description, and no tags. Replace the description, add tags if you like, and write the article below the frontmatter.
+Replace the placeholder description, add optional tags, and write the article below the frontmatter.
 
 ```yaml
 ---
@@ -46,12 +43,12 @@ draft: true
 ---
 ```
 
-Include a time zone in timestamps. The site sorts posts by `published` and uses `Asia/Shanghai` for dates and archive years. The optional `updated` timestamp must be on or after `published`.
-
-Store images in `public/images/` and reference them with paths such as `/images/example.png`. The [Markdown syntax guide](src/content/posts/markdown-syntax-support.md) covers tables, task lists, heading anchors, callouts, collapsible sections, code tabs, [Shiki](https://shiki.style/) highlighting, and [KaTeX](https://katex.org/) math.
-
-The site, RSS feed, and sitemap omit drafts. Set `draft: false` to preview a post locally or include it in the next deployment, even if `published` is in the future. If you’re only previewing, restore `draft: true` before committing.
+- Include a time zone in timestamps. Posts sort by `published`, and dates and archive years use `Asia/Shanghai`. If set, `updated` must be on or after `published`.
+- Save images in `public/images/` and reference them as `/images/example.png`. See the [Markdown syntax guide](src/content/posts/markdown-syntax-support.md) for supported features.
+- Set `draft: false` to include the post in the site, RSS feed, and sitemap, even if `published` is in the future. For a local preview only, restore `draft: true` before committing.
 
 ## Deploy to GitHub Pages
 
-In the repository’s **Settings → Pages**, select **GitHub Actions** as the source. The [CI workflow](.github/workflows/ci.yml) runs `pnpm build` on pull requests. After a successful build on `main`, it deploys `dist/` to [GitHub Pages](https://docs.github.com/en/pages). The output includes `/rss.xml`, `/sitemap-index.xml`, and `/robots.txt`.
+In your repository’s **Settings → Pages**, set the source to **GitHub Actions**.
+
+The [CI workflow](.github/workflows/ci.yml) runs `pnpm build` on pull requests and pushes to `main`. After a successful build on `main`, it publishes `dist/` to GitHub Pages, including `/rss.xml`, `/sitemap-index.xml`, and `/robots.txt`.
