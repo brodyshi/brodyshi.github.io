@@ -28,6 +28,10 @@
     overflow-x: auto;
   }
 
+  .sr-only {
+    @apply sr-only;
+  }
+
   .tabs input:focus-visible + label {
     outline: 2px solid var(--accent-foreground);
     outline-offset: -2px;
