@@ -28,6 +28,7 @@ export const config = {
     post: {
       back: '全部文章',
       backToTop: '返回顶部',
+      readingProgress: '阅读进度',
       published: (date: string) => `发布于 ${date}`,
       updated: (date: string) => `更新于 ${date}`,
       tags: '文章标签',
