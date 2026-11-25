@@ -12,6 +12,7 @@ import { defineConfig } from 'astro/config';
 import type { Element } from 'hast';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeKatex from 'rehype-katex';
+import rehypeMermaid from 'rehype-mermaid';
 import rehypeSlug from 'rehype-slug';
 import { visit } from 'unist-util-visit';
 import { groupIconVitePlugin } from 'vitepress-plugin-group-icons';
@@ -30,6 +31,7 @@ export default defineConfig({
   trailingSlash: 'always',
   integrations: [sitemap({ filter: (url) => !url.endsWith('/404/') })],
   markdown: {
+    syntaxHighlight: { type: 'shiki', excludeLangs: ['mermaid'] },
     processor: unified({
       remarkPlugins: [remarkReadingTime, ...sharedRemarkPlugins],
       rehypePlugins: [
@@ -52,6 +54,7 @@ export default defineConfig({
             content: { type: 'text', value: '' },
           },
         ],
+        [rehypeMermaid, { strategy: 'pre-mermaid' }],
         rehypeVitePressCode,
       ],
     }),

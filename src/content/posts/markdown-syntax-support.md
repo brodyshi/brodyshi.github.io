@@ -210,7 +210,7 @@ draft: false
 
 ## 代码块
 
-用三个反引号围住代码，在开头注明语言，例如 `ts`。Shiki 会按语言着色，并把行尾标记渲染成对应的效果。在独立代码块的开头加上 `[src/fibonacci.ts]` 可以显示文件名，受支持的文件类型还会显示图标。
+用三个反引号围住代码，在开头注明语言，例如 `ts`。[Shiki](https://shiki.style/) 会按语言着色，并把行尾标记渲染成对应的效果。在独立代码块的开头加上 `[src/fibonacci.ts]` 可以显示文件名，受支持的文件类型还会显示图标。
 
 ### 行号和行高亮
 
@@ -412,9 +412,37 @@ $ npm install katex
 
 :::
 
+## 流程图
+
+用 `mermaid` 代码块绘制流程图、时序图、状态图、类图、甘特图等，各类图表的语法见 [Mermaid 官方文档](https://mermaid.js.org/)。
+
+**输入**
+
+````md
+```mermaid
+flowchart TD
+    A[Christmas] -->|Get money| B(Go shopping)
+    B --> C{Let me think}
+    C -->|One| D[Laptop]
+    C -->|Two| E[iPhone]
+    C -->|Three| F[Car]
+```
+````
+
+**输出**
+
+```mermaid
+flowchart TD
+    A[Christmas] -->|Get money| B(Go shopping)
+    B --> C{Let me think}
+    C -->|One| D[Laptop]
+    C -->|Two| E[iPhone]
+    C -->|Three| F[Car]
+```
+
 ## 数学公式
 
-本站用 KaTeX 渲染公式。行内公式用一对 `$` 包起来，独立公式用两行 `$$` 包起来。
+行内公式用一对 `$` 包围。独立公式单独成块，起始和结束的 `$$` 各占一行。公式使用 [KaTeX](https://katex.org/) 渲染。
 
 ### 斐波那契数列
 
@@ -427,7 +455,7 @@ $$
 F_n = F_{n-1} + F_{n-2}, \qquad n \ge 2
 $$
 
-把第 5 项和第 6 项相加，得到 $F_7=F_6+F_5=8+5=13$。
+把 $F_5$ 和 $F_6$ 相加，得到 $F_7=F_6+F_5=8+5=13$。
 ```
 
 **输出**
@@ -438,11 +466,11 @@ $$
 F_n = F_{n-1} + F_{n-2}, \qquad n \ge 2
 $$
 
-把第 5 项和第 6 项相加，得到 $F_7=F_6+F_5=8+5=13$。
+把 $F_5$ 和 $F_6$ 相加，得到 $F_7=F_6+F_5=8+5=13$。
 
 ### 辗转相除法
 
-用 `aligned` 排列多行等式，用 `&` 标出等号的对齐位置，用 `\\` 换行。
+在独立公式中用 `aligned` 排列多行等式。在要对齐的等号前加 `&`，用 `\\` 换行。
 
 **输入**
 

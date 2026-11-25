@@ -13,6 +13,58 @@ import '../styles/typography.css';
 </div>
 
 <script>
+  const diagrams = document.querySelectorAll<HTMLElement>(
+    '.vp-doc pre.mermaid',
+  );
+  if (diagrams.length) {
+    import('mermaid')
+      .then(async ({ default: mermaid }) => {
+        const initialTheme = document.documentElement.classList.contains('dark')
+          ? 'dark'
+          : 'light';
+        const themes = [
+          initialTheme,
+          initialTheme === 'dark' ? 'light' : 'dark',
+        ];
+        const sources = Array.from(diagrams, (element) => ({
+          element,
+          source: element.textContent ?? '',
+        }));
+        const template = document.createElement('template');
+
+        for (const theme of themes) {
+          mermaid.initialize({
+            startOnLoad: false,
+            securityLevel: 'strict',
+            suppressErrorRendering: true,
+            theme: theme === 'dark' ? 'dark' : 'default',
+          });
+
+          for (const [index, { element, source }] of sources.entries()) {
+            try {
+              const { svg, bindFunctions } = await mermaid.render(
+                `mermaid-${theme}-${index}`,
+                source,
+              );
+              template.innerHTML = svg;
+              const view = template.content.firstElementChild;
+              if (view instanceof SVGSVGElement) {
+                view.dataset.theme = theme;
+
+                // Mermaid binds flowchart tooltips to the container's first SVG.
+                if (element.firstElementChild) element.prepend(view);
+                else element.replaceChildren(view);
+                bindFunctions?.(element);
+              }
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        }
+      })
+      .catch(console.error);
+  }
+
   const shellLanguages = new Set(['shellscript', 'shell', 'bash', 'sh', 'zsh']);
 
   document.addEventListener('change', (event) => {
