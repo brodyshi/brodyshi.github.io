@@ -8,6 +8,24 @@ draft: false
 
 首先介绍一下我家网络的基本情况，湖北移动千兆宽带[^pon][^fttr]，诺基亚贝尔 XG-040G-MF 光猫[^onu]，Xiaomi 路由器 BE6500 Pro。整体思路是将光猫修改为桥接模式，光猫 2.5G 网口连主路由器，主路由器作为中枢网关负责拨号上网，并和 1 个子路由有线 Mesh 组网实现信号全屋覆盖。
 
+```mermaid
+---
+config:
+  htmlLabels: false
+  flowchart:
+    curve: linear
+---
+flowchart TD
+    accTitle: Home Fiber and Mesh Network
+    accDescr: Fiber connects to a bridged Nokia ONU, then to a Xiaomi main router and a wired mesh node. Both routers connect to home devices over Wi-Fi.
+
+    ISP(["China Mobile Fiber"]) --- ONU["Nokia XG-040G-MF<br/>Bridged ONU"]
+    ONU --- Router["Xiaomi BE6500 Pro<br/>Main Router"]
+    Router ---|Wired Mesh| Mesh["Mesh node"]
+    Router -.-|Wi-Fi| MainClients["Home devices"]
+    Mesh -.-|Wi-Fi| MeshClients["Home devices"]
+```
+
 ## 为什么要改桥接
 
 1. 减轻光猫负荷

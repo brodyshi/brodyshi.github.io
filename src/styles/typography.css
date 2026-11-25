@@ -28,6 +28,49 @@
     overflow-x: auto;
   }
 
+  pre.mermaid {
+    margin-block: 1rem;
+
+    &:not(:has(> svg)) {
+      position: relative;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      color: transparent;
+      user-select: none;
+
+      &::after {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        border-radius: 0.5rem;
+        background-color: var(--muted);
+        color: var(--muted-foreground);
+        font-size: 0.875rem;
+        content: '加载中...';
+      }
+    }
+
+    > svg {
+      display: block;
+      margin-inline: auto;
+    }
+
+    > svg[data-theme='dark']:not(:only-child) {
+      display: none;
+
+      @variant dark {
+        display: block;
+      }
+    }
+
+    > svg[data-theme='light']:not(:only-child) {
+      @variant dark {
+        display: none;
+      }
+    }
+  }
+
   .sr-only {
     @apply sr-only;
   }
